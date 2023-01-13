@@ -37,7 +37,7 @@ def generateKeys():
 
 # kompresja to taka sztuczka w sumie, krzywe eliptyczne są symetryczne względem osi X, wystarczy zapisać czy chodzi o punkt nad, albo pod 
 def compressPoint(point):
-    return (point[0], point[1] % 2)
+    return (point.x, point.y % 2)
 
 def uncompressPoint(compressed_point, p, a, b):
     x, is_odd = compressed_point
@@ -88,27 +88,27 @@ def decryptECC(encryptedMessage, publicKey, privateKey, nonce, authTag):
     return decryptAES(encryptedMessage, nonce, authTag, secretKey)
 
 
-user1Private, user1Public = generateKeys()
-user2Private, user2Public = generateKeys()
-
-print("Klucze Usera 1")
-print("Prywatny: ", user1Private)
-print("Publiczny: ", user1Public)
-
-
-print("Klucze Usera 2")
-print("Prywatny: ", user2Private)
-print("Publiczny: ", user2Public)
-
-encryptedMessage, nonce, authTag = encryptECC(b'Ala ma kota', user2Public, user1Private)
-
-print("======")
-print("Zaszyfrowana wiadomość")
-print(encryptedMessage)
-
-decryptedMessage = decryptECC(encryptedMessage, user1Public, user2Private, nonce, authTag)
-
-print("======")
-print("Odszyfrowana wiadomość")
-print(decryptedMessage)
+# user1Private, user1Public = generateKeys()
+# user2Private, user2Public = generateKeys()
+#
+# print("Klucze Usera 1")
+# print("Prywatny: ", user1Private)
+# print("Publiczny: ", user1Public)
+#
+#
+# print("Klucze Usera 2")
+# print("Prywatny: ", user2Private)
+# print("Publiczny: ", user2Public)
+#
+# encryptedMessage, nonce, authTag = encryptECC(b'Ala ma kota', user2Public, user1Private)
+#
+# print("======")
+# print("Zaszyfrowana wiadomość")
+# print(encryptedMessage)
+#
+# decryptedMessage = decryptECC(encryptedMessage, user1Public, user2Private, nonce, authTag)
+#
+# print("======")
+# print("Odszyfrowana wiadomość")
+# print(decryptedMessage)
 
