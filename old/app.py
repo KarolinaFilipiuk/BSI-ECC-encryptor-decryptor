@@ -6,7 +6,6 @@ import secrets, hashlib
 from nummaster.basic import sqrtmod
 from Crypto.Cipher import AES
 
-
 # Krzywa używana w bitcoin.
 # y^2 = x^3 + ax + b (mod p)
 # p ~ rozmiar skończonego ciała (algebra) - dla bitcoin dosyć duże
