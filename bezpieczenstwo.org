@@ -1,0 +1,80 @@
+* BSI
+
+** Krzywe eliptyczne
+
+Krzywa eliptyczna - gładka krzywa algebraiczna, można ją przedstawić wzorem:
+
+y^2 = x^3 + ax + b
+
+#+CAPTION: Krzywa eliptyczna
+#+NAME:   fig:SED-HR4049
+[[./ec1.png]]
+
+Do celów kryptograficznych wykorzystuje się krzywe zdefiniowane nad skończonym polem(pole takie ma skończoną liczbę elementów). Do zdefiniowania takiego pola używa się działania modulo. 
+Równanie krzywej przyjmuje wtedy postać:
+
+y^2 = x^3 + ax + b (mod p)
+
+Rozpatrujemy wtedy punkty leżące na tej krzywej o współczynnikach całkowitych.
+
+** secp256k1
+
+secp256k1 czyli krzywa eliptyczna używana w bitcoin do sygnowania i weryfikacji transakcji.
+
+p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
+n = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
+a = 0x0000000000000000000000000000000000000000000000000000000000000000
+b = 0x0000000000000000000000000000000000000000000000000000000000000007
+G = (0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798,
+     0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8)
+h = 1
+
+y^2 = x^3 + ax + b (mod p)
+
+p ~ rozmiar skończonego ciała (algebra) - dla bitcoin dosyć duże
+a i b - parametry samej krzywej, bitcoin 0 i 7
+n - rząd? krzywej, generalnie to liczba wszystkich punktów tej krzywej dla danego punktu G.
+h - związane z n, ale dla nas chyba nie istotne
+G - punkt generujący tą grupę n-punktów krzywej, trzeba odpowiednio razem z n dobrać. Mnożąc ten punkt przez liczbę całkowitą otrzymamy kolejny punkt z krzywej.
+
+** Trapdoor function
+
+Aby skutecznie zaszyfrować wiadomość potrzebna jest operacja którą stosunkowo łatwo jest wykonać dla dowolnych danych wejściowych, natomiast jest ciężka do odwrócenia.
+
+W przypadku krzywych eliptycznych takim działaniem jest mnożenie punktu krzywej przez skalar, albo n-krotne dodanie punktu do siebie. 
+
+Dodawanie dwóch punktów daje nowy punkt należący do danej krzywej. Sama operacja nie jest oczywista, ale stosunkowo łatwa do obliczenia. Po wykonaniu operacji kilka razy, z wyniku będzie ciężko odgadnąć dane wejściowe. 
+
+Dla krzywych eliptycznych można wyznaczyć punkt G, którzy mnożony przez kolejne liczby(< n) da kolejne punkty należące do danej krzywej.
+
+Wykorzystując właściowści tej operacji można wygenerować parę kluczy prywatnych i publicznych, oraz na ich podstawie wygenerować wspólny klucz do szyfrowania wiadomości.
+
+** Generowanie kluczy
+
+Do wygenerowania pary kluczy należy wybrać losową liczbę <n, która stanie się kluczem prywatnym, a następnie przemnożyć punkt G przez nią, a wynik będzie kluczem publicznym.
+
+Przy wykorzystaniu odpowiedniej krzywej odgadnięcie klucza prywatnego jest trudne. 
+
+Strona zawierająca informacje na temat bezpieczeństwa: https://safecurves.cr.yp.to/
+
+** Kompresowanie kluczy
+
+Klucze publiczne to punkty, a krzywe są symetryczne względem osi x. Przesyłając punkt x i informacje gdzie znajduje się y można odtworzyć współrzędną. Skraca to zapis punktu
+
+** Diffie-Hellman Key Exchange 
+
+Czyli metoda która polega na bezpieczne ustalenie wspólnego klucza do zaszyfrowania wiadomości. 
+
+#+CAPTION: Wizualizacja działania DifiHellmana
+#+NAME:   fig:SED-HR4049
+[[./ec2.svg]]
+
+W przypadku krzywych eliptycznych sprowadzi się to do wymiany kluczami publicznymi. A następnie za pomocą kombinacji <mój_prywatny, publiczny_odbiorcy>, <mój_publiczny, prywatny_odbiorcy> można uzyskać ten sam wspólny klucz. Przedstawia to działanie:
+
+(a * G) * b = secret = (b * G) * a.
+
+gdzie a i b to klucze prywatne, a w nawiasach przemnożone przez G to klucze publiczne. 
+Oczywiście tutaj wykonywane jest mnożenie punktu krzywej przez skalar opisywane wcześniej.
+
+W tedy wymieniając się tylko kluczami publicznymi, obie strony otrzymają ten sam sekret, który może zostać użyty do szyfrowania symetrycznego. 
+
